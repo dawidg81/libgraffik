@@ -3,7 +3,7 @@
 
 int main(int argc, char* argv[]) {
     // Create a window
-    WindowHandle* window = createWindow("Graphics Demo - SDL Backend", 800, 600);
+    WindowHandle* window = createWindow("TestApp", 800, 600);
     
     if (!window) {
         return -1;
@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
         pollEvents(window);
         
         // Clear screen with a dark background
-        clearScreen(window, Color(20, 20, 30));
+        clearScreen(window, Color(0, 0, 0));
         
         // Draw a grid
         Color gridColor(50, 50, 70);

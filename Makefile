@@ -19,11 +19,11 @@ LDFLAGS = -L$(SDL2_PATH)/lib
 LIBS = -lmingw32 -lSDL2main -lSDL2 -mwindows
 
 # Source files
-SOURCES = main.cpp graphics.cpp
+SOURCES = sample1.cpp graphics.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 # Output executable
-TARGET = GraphicsDemo.exe
+TARGET = sample.exe
 
 # Default target
 all: $(TARGET)
