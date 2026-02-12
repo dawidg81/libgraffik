@@ -1,4 +1,4 @@
-# Graffiklib
+# libgraffik
 
 A simple cross-platform graphics abstraction layer with support for multiple backends (SDL2, Win32, X11).
 
