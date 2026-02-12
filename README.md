@@ -57,25 +57,7 @@ make run
 
 **Note**: Make sure `SDL2.dll` from `SDL2/bin` is in the same directory as the executable or in your PATH.
 
-#### Option 2: Using CMake
-
-```bash
-mkdir build
-cd build
-
-# If SDL2 is in a standard location (C:/SDL2 or D:/SDL2)
-cmake ..
-
-# If SDL2 is elsewhere
-cmake .. -DCMAKE_PREFIX_PATH=D:/path/to/SDL2
-
-# Build
-cmake --build .
-```
-
-The CMakeLists.txt will automatically copy SDL2.dll to the build directory.
-
-#### Option 3: Manual compilation with g++/MinGW
+#### Option 2: Manual compilation with g++/MinGW
 
 ```bash
 # Adjust paths to match your SDL2 installation
@@ -88,7 +70,7 @@ g++ -std=c++11 -DUSE_SDL -o GraphicsDemo.exe main.cpp graphics.cpp ^
 copy C:\SDL2\bin\SDL2.dll .
 ```
 
-#### Option 4: Manual compilation with MSVC
+#### Option 3: Manual compilation with MSVC
 
 ```bash
 cl /EHsc /DUSE_SDL main.cpp graphics.cpp ^

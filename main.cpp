@@ -51,6 +51,18 @@ int main(int argc, char* argv[]) {
         int bounceX = 600;
         int bounceY = 300 + static_cast<int>(100 * sin(time * 2));
         drawFilledCircle(window, bounceX, bounceY, 30, Color(100, 200, 255));
+
+        int prevX = bounceX + bounceX + time * 20;
+        int prevY = 300 + static_cast<int>(100 * sin(bounceX + time * 20 * 2));
+
+        for (int i = bounceX + time * 20; i > bounceX; i--) {
+            int x = bounceX + bounceX + time * 20 - i;
+            int y = 300 + static_cast<int>(100 * sin(i * 2));
+            // drawPixel(window, x, y, Color(255, 0, 0));
+            drawLine(window, prevX, prevY, x, y, Color(255, 0, 0));
+            prevX = x;
+            prevY = y;
+        }
         
         // Draw multiple small circles in a pattern
         for (int i = 0; i < 8; i++) {
