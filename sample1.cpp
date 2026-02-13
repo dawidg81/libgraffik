@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
         clearScreen(window, Color(0, 0, 0));
         
         // Draw a grid
-        Color gridColor(50, 50, 70);
+        Color gridColor(255, 255, 255);
         for (int x = 0; x < 800; x += 50) {
             drawLine(window, x, 0, x, 600, gridColor);
         }
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
         drawFilledCircle(window, bounceX, bounceY, 30, Color(100, 200, 255));
 
         int prevX = bounceX + bounceX + time * 20;
-        int prevY = 300 + static_cast<int>(100 * sin(bounceX + time * 20 * 2));
+        int prevY = 300 + static_cast<int>(100 * sin((bounceX + time * 20) * 2));
 
         for (int i = bounceX + time * 20; i > bounceX; i--) {
             int x = bounceX + bounceX + time * 20 - i;
