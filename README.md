@@ -1,12 +1,12 @@
-# libgraffik - Cross-Platform Graphics Library
+# libgraffik
 
 A simple cross-platform graphics abstraction layer with support for multiple backends (SDL2, Win32, X11).
 
 ## Implemented Backends
 
-- ✅ **SDL2** (Windows, Linux, macOS) - Fully implemented
-- ✅ **Win32** (Windows native) - Fully implemented
-- ✅ **X11** (Linux native) - Fully implemented
+- **SDL2** (Windows, Linux, macOS) - Fully implemented
+- **Win32** (Windows native) - Fully implemented
+- **X11** (Linux native) - Fully implemented
 
 ## Features
 
@@ -23,7 +23,7 @@ A simple cross-platform graphics abstraction layer with support for multiple bac
 
 ## Building on Windows
 
-### Option 1: Batch File (Easiest for Windows)
+### Option 1: Batch File
 
 ```cmd
 REM Build with SDL2
@@ -39,7 +39,7 @@ REM Show help
 build.bat help
 ```
 
-### Option 2: PowerShell Script (Recommended for Windows)
+### Option 2: PowerShell Script
 
 ```powershell
 # Build with SDL2
@@ -124,6 +124,8 @@ sudo dnf install libX11-devel     # Fedora
 ```
 
 ## Manual Compilation
+
+Recommended for production use. The Makefile and other build files in this repository are designed for demonstration purposes.
 
 ### Windows with SDL2
 ```cmd
