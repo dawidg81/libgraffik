@@ -23,6 +23,7 @@ ifdef OS
         RM = del /Q
         RMDIR = rmdir /S /Q
         MKDIR = if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+        SHELL = cmd
     endif
 else
     PLATFORM = Linux
@@ -57,10 +58,6 @@ else ifeq ($(BACKEND),x11)
     LIBS = -lX11
 endif
 
-# Find all example files
-EXAMPLE_FILES := $(wildcard $(EXAMPLES_DIR)/*.cpp)
-EXAMPLE_NAMES := $(basename $(notdir $(EXAMPLE_FILES)))
-
 # Default target - show help
 .PHONY: all
 all: help
@@ -71,27 +68,27 @@ help:
 	@echo ========================================
 	@echo    libgraffik Build System
 	@echo ========================================
-	@echo.
+	@echo:
 	@echo Platform: $(PLATFORM)
-	@echo.
+	@echo:
 	@echo Usage:
 	@echo   make build BACKEND=^<backend^> EXAMPLE=^<example^>
-	@echo.
+	@echo:
 	@echo Available Backends:
 	@echo   sdl    - SDL2 (cross-platform)
 	@echo   win32  - Win32 API (Windows only)
 	@echo   x11    - X11 (Linux only)
-	@echo.
+	@echo:
 	@echo Available Examples:
 	@for %%f in ($(EXAMPLES_DIR)\*.cpp) do @echo   %%~nf
-	@echo.
+	@echo:
 	@echo Example Commands:
 	@echo   make build BACKEND=sdl EXAMPLE=sample1
 	@echo   make build BACKEND=win32 EXAMPLE=sample2
 	@echo   make run BACKEND=sdl EXAMPLE=sample1
 	@echo   make build-all BACKEND=sdl
 	@echo   make clean
-	@echo.
+	@echo:
 
 # Build target
 .PHONY: build
@@ -103,14 +100,14 @@ build: validate
 		-o $(BUILD_DIR)/$(EXAMPLE)$(EXE_EXT) \
 		$(LDFLAGS) $(LIBS)
 	@echo Build successful!
-	@echo Output: $(BUILD_DIR)/$(EXAMPLE)$(EXE_EXT)
+	@echo Output: $(BUILD_DIR)\$(EXAMPLE)$(EXE_EXT)
 ifeq ($(BACKEND),sdl)
 ifeq ($(PLATFORM),Windows)
 	@if exist $(LIB_DIR)\SDL2.dll copy $(LIB_DIR)\SDL2.dll $(BUILD_DIR)\ >nul 2>&1
 	@if exist $(SDL2_PATH)\bin\SDL2.dll if not exist $(BUILD_DIR)\SDL2.dll copy $(SDL2_PATH)\bin\SDL2.dll $(BUILD_DIR)\ >nul 2>&1
 endif
 endif
-	@echo.
+	@echo:
 	@echo Run with: $(BUILD_DIR)\$(EXAMPLE)$(EXE_EXT)
 
 # Validate inputs
@@ -140,7 +137,7 @@ ifndef BACKEND
 endif
 	@echo Building all examples with $(BACKEND) backend...
 	@for %%f in ($(EXAMPLES_DIR)\*.cpp) do @$(MAKE) --no-print-directory build BACKEND=$(BACKEND) EXAMPLE=%%~nf
-	@echo.
+	@echo:
 	@echo All examples built successfully!
 
 # Run an example
@@ -169,10 +166,10 @@ config:
 	@echo   Lib Dir:     $(LIB_DIR)
 	@echo   Examples:    $(EXAMPLES_DIR)
 	@echo   Build Dir:   $(BUILD_DIR)
-	@echo.
+	@echo:
 	@echo Available Examples:
 	@for %%f in ($(EXAMPLES_DIR)\*.cpp) do @echo   - %%~nf
-	@echo.
+	@echo:
 	@echo Available Backends:
 	@echo   - sdl (SDL2)
 ifeq ($(PLATFORM),Windows)
