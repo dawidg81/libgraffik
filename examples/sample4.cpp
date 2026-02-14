@@ -4,6 +4,128 @@
 #include <map>
 #include <cstdlib>
 #include <ctime>
+#include <cstdio>
+
+// 8x8 monochrome bitmap font (basic ASCII)
+unsigned char font8x8_basic[128][8] = {
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0020 (space)
+    { 0x18, 0x3C, 0x3C, 0x18, 0x18, 0x00, 0x18, 0x00},   // U+0021 (!)
+    { 0x36, 0x36, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0022 (")
+    { 0x36, 0x36, 0x7F, 0x36, 0x7F, 0x36, 0x36, 0x00},   // U+0023 (#)
+    { 0x0C, 0x3E, 0x03, 0x1E, 0x30, 0x1F, 0x0C, 0x00},   // U+0024 ($)
+    { 0x00, 0x63, 0x33, 0x18, 0x0C, 0x66, 0x63, 0x00},   // U+0025 (%)
+    { 0x1C, 0x36, 0x1C, 0x6E, 0x3B, 0x33, 0x6E, 0x00},   // U+0026 (&)
+    { 0x06, 0x06, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0027 (')
+    { 0x18, 0x0C, 0x06, 0x06, 0x06, 0x0C, 0x18, 0x00},   // U+0028 (()
+    { 0x06, 0x0C, 0x18, 0x18, 0x18, 0x0C, 0x06, 0x00},   // U+0029 ())
+    { 0x00, 0x66, 0x3C, 0xFF, 0x3C, 0x66, 0x00, 0x00},   // U+002A (*)
+    { 0x00, 0x0C, 0x0C, 0x3F, 0x0C, 0x0C, 0x00, 0x00},   // U+002B (+)
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x0C, 0x06},   // U+002C (,)
+    { 0x00, 0x00, 0x00, 0x3F, 0x00, 0x00, 0x00, 0x00},   // U+002D (-)
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x0C, 0x00},   // U+002E (.)
+    { 0x60, 0x30, 0x18, 0x0C, 0x06, 0x03, 0x01, 0x00},   // U+002F (/)
+    { 0x3E, 0x63, 0x73, 0x7B, 0x6F, 0x67, 0x3E, 0x00},   // U+0030 (0)
+    { 0x0C, 0x0E, 0x0C, 0x0C, 0x0C, 0x0C, 0x3F, 0x00},   // U+0031 (1)
+    { 0x1E, 0x33, 0x30, 0x1C, 0x06, 0x33, 0x3F, 0x00},   // U+0032 (2)
+    { 0x1E, 0x33, 0x30, 0x1C, 0x30, 0x33, 0x1E, 0x00},   // U+0033 (3)
+    { 0x38, 0x3C, 0x36, 0x33, 0x7F, 0x30, 0x78, 0x00},   // U+0034 (4)
+    { 0x3F, 0x03, 0x1F, 0x30, 0x30, 0x33, 0x1E, 0x00},   // U+0035 (5)
+    { 0x1C, 0x06, 0x03, 0x1F, 0x33, 0x33, 0x1E, 0x00},   // U+0036 (6)
+    { 0x3F, 0x33, 0x30, 0x18, 0x0C, 0x0C, 0x0C, 0x00},   // U+0037 (7)
+    { 0x1E, 0x33, 0x33, 0x1E, 0x33, 0x33, 0x1E, 0x00},   // U+0038 (8)
+    { 0x1E, 0x33, 0x33, 0x3E, 0x30, 0x18, 0x0E, 0x00},   // U+0039 (9)
+    { 0x00, 0x0C, 0x0C, 0x00, 0x00, 0x0C, 0x0C, 0x00},   // U+003A (:)
+    { 0x00, 0x0C, 0x0C, 0x00, 0x00, 0x0C, 0x0C, 0x06},   // U+003B (;)
+    { 0x18, 0x0C, 0x06, 0x03, 0x06, 0x0C, 0x18, 0x00},   // U+003C (<)
+    { 0x00, 0x00, 0x3F, 0x00, 0x00, 0x3F, 0x00, 0x00},   // U+003D (=)
+    { 0x06, 0x0C, 0x18, 0x30, 0x18, 0x0C, 0x06, 0x00},   // U+003E (>)
+    { 0x1E, 0x33, 0x30, 0x18, 0x0C, 0x00, 0x0C, 0x00},   // U+003F (?)
+    { 0x3E, 0x63, 0x7B, 0x7B, 0x7B, 0x03, 0x1E, 0x00},   // U+0040 (@)
+    { 0x0C, 0x1E, 0x33, 0x33, 0x3F, 0x33, 0x33, 0x00},   // U+0041 (A)
+    { 0x3F, 0x66, 0x66, 0x3E, 0x66, 0x66, 0x3F, 0x00},   // U+0042 (B)
+    { 0x3C, 0x66, 0x03, 0x03, 0x03, 0x66, 0x3C, 0x00},   // U+0043 (C)
+    { 0x1F, 0x36, 0x66, 0x66, 0x66, 0x36, 0x1F, 0x00},   // U+0044 (D)
+    { 0x7F, 0x46, 0x16, 0x1E, 0x16, 0x46, 0x7F, 0x00},   // U+0045 (E)
+    { 0x7F, 0x46, 0x16, 0x1E, 0x16, 0x06, 0x0F, 0x00},   // U+0046 (F)
+    { 0x3C, 0x66, 0x03, 0x03, 0x73, 0x66, 0x7C, 0x00},   // U+0047 (G)
+    { 0x33, 0x33, 0x33, 0x3F, 0x33, 0x33, 0x33, 0x00},   // U+0048 (H)
+    { 0x1E, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x1E, 0x00},   // U+0049 (I)
+    { 0x78, 0x30, 0x30, 0x30, 0x33, 0x33, 0x1E, 0x00},   // U+004A (J)
+    { 0x67, 0x66, 0x36, 0x1E, 0x36, 0x66, 0x67, 0x00},   // U+004B (K)
+    { 0x0F, 0x06, 0x06, 0x06, 0x46, 0x66, 0x7F, 0x00},   // U+004C (L)
+    { 0x63, 0x77, 0x7F, 0x7F, 0x6B, 0x63, 0x63, 0x00},   // U+004D (M)
+    { 0x63, 0x67, 0x6F, 0x7B, 0x73, 0x63, 0x63, 0x00},   // U+004E (N)
+    { 0x1C, 0x36, 0x63, 0x63, 0x63, 0x36, 0x1C, 0x00},   // U+004F (O)
+    { 0x3F, 0x66, 0x66, 0x3E, 0x06, 0x06, 0x0F, 0x00},   // U+0050 (P)
+    { 0x1E, 0x33, 0x33, 0x33, 0x3B, 0x1E, 0x38, 0x00},   // U+0051 (Q)
+    { 0x3F, 0x66, 0x66, 0x3E, 0x36, 0x66, 0x67, 0x00},   // U+0052 (R)
+    { 0x1E, 0x33, 0x07, 0x0E, 0x38, 0x33, 0x1E, 0x00},   // U+0053 (S)
+    { 0x3F, 0x2D, 0x0C, 0x0C, 0x0C, 0x0C, 0x1E, 0x00},   // U+0054 (T)
+    { 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x3F, 0x00},   // U+0055 (U)
+    { 0x33, 0x33, 0x33, 0x33, 0x33, 0x1E, 0x0C, 0x00},   // U+0056 (V)
+    { 0x63, 0x63, 0x63, 0x6B, 0x7F, 0x77, 0x63, 0x00},   // U+0057 (W)
+    { 0x63, 0x63, 0x36, 0x1C, 0x1C, 0x36, 0x63, 0x00},   // U+0058 (X)
+    { 0x33, 0x33, 0x33, 0x1E, 0x0C, 0x0C, 0x1E, 0x00},   // U+0059 (Y)
+    { 0x7F, 0x63, 0x31, 0x18, 0x4C, 0x66, 0x7F, 0x00},   // U+005A (Z)
+    { 0x1E, 0x06, 0x06, 0x06, 0x06, 0x06, 0x1E, 0x00},   // U+005B ([)
+    { 0x03, 0x06, 0x0C, 0x18, 0x30, 0x60, 0x40, 0x00},   // U+005C (\)
+    { 0x1E, 0x18, 0x18, 0x18, 0x18, 0x18, 0x1E, 0x00},   // U+005D (])
+    { 0x08, 0x1C, 0x36, 0x63, 0x00, 0x00, 0x00, 0x00},   // U+005E (^)
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF},   // U+005F (_)
+    { 0x0C, 0x0C, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0060 (`)
+    { 0x00, 0x00, 0x1E, 0x30, 0x3E, 0x33, 0x6E, 0x00},   // U+0061 (a)
+    { 0x07, 0x06, 0x06, 0x3E, 0x66, 0x66, 0x3B, 0x00},   // U+0062 (b)
+    { 0x00, 0x00, 0x1E, 0x33, 0x03, 0x33, 0x1E, 0x00},   // U+0063 (c)
+    { 0x38, 0x30, 0x30, 0x3e, 0x33, 0x33, 0x6E, 0x00},   // U+0064 (d)
+    { 0x00, 0x00, 0x1E, 0x33, 0x3f, 0x03, 0x1E, 0x00},   // U+0065 (e)
+    { 0x1C, 0x36, 0x06, 0x0f, 0x06, 0x06, 0x0F, 0x00},   // U+0066 (f)
+    { 0x00, 0x00, 0x6E, 0x33, 0x33, 0x3E, 0x30, 0x1F},   // U+0067 (g)
+    { 0x07, 0x06, 0x36, 0x6E, 0x66, 0x66, 0x67, 0x00},   // U+0068 (h)
+    { 0x0C, 0x00, 0x0E, 0x0C, 0x0C, 0x0C, 0x1E, 0x00},   // U+0069 (i)
+    { 0x30, 0x00, 0x30, 0x30, 0x30, 0x33, 0x33, 0x1E},   // U+006A (j)
+    { 0x07, 0x06, 0x66, 0x36, 0x1E, 0x36, 0x67, 0x00},   // U+006B (k)
+    { 0x0E, 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0x1E, 0x00},   // U+006C (l)
+    { 0x00, 0x00, 0x33, 0x7F, 0x7F, 0x6B, 0x63, 0x00},   // U+006D (m)
+    { 0x00, 0x00, 0x1F, 0x33, 0x33, 0x33, 0x33, 0x00},   // U+006E (n)
+    { 0x00, 0x00, 0x1E, 0x33, 0x33, 0x33, 0x1E, 0x00},   // U+006F (o)
+    { 0x00, 0x00, 0x3B, 0x66, 0x66, 0x3E, 0x06, 0x0F},   // U+0070 (p)
+    { 0x00, 0x00, 0x6E, 0x33, 0x33, 0x3E, 0x30, 0x78},   // U+0071 (q)
+    { 0x00, 0x00, 0x3B, 0x6E, 0x66, 0x06, 0x0F, 0x00},   // U+0072 (r)
+    { 0x00, 0x00, 0x3E, 0x03, 0x1E, 0x30, 0x1F, 0x00},   // U+0073 (s)
+    { 0x08, 0x0C, 0x3E, 0x0C, 0x0C, 0x2C, 0x18, 0x00},   // U+0074 (t)
+    { 0x00, 0x00, 0x33, 0x33, 0x33, 0x33, 0x6E, 0x00},   // U+0075 (u)
+    { 0x00, 0x00, 0x33, 0x33, 0x33, 0x1E, 0x0C, 0x00},   // U+0076 (v)
+    { 0x00, 0x00, 0x63, 0x6B, 0x7F, 0x7F, 0x36, 0x00},   // U+0077 (w)
+    { 0x00, 0x00, 0x63, 0x36, 0x1C, 0x36, 0x63, 0x00},   // U+0078 (x)
+    { 0x00, 0x00, 0x33, 0x33, 0x33, 0x3E, 0x30, 0x1F},   // U+0079 (y)
+    { 0x00, 0x00, 0x3F, 0x19, 0x0C, 0x26, 0x3F, 0x00},   // U+007A (z)
+    { 0x38, 0x0C, 0x0C, 0x07, 0x0C, 0x0C, 0x38, 0x00},   // U+007B ({)
+    { 0x18, 0x18, 0x18, 0x00, 0x18, 0x18, 0x18, 0x00},   // U+007C (|)
+    { 0x07, 0x0C, 0x0C, 0x38, 0x0C, 0x0C, 0x07, 0x00},   // U+007D (})
+    { 0x6E, 0x3B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+007E (~)
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}    // U+007F
+};
+
+// Helper function to draw text using bitmap font
+void drawText(WindowHandle* window, int x, int y, const char* text, Color color) {
+    int cursorX = x;
+    for (int i = 0; text[i] != '\0'; ++i) {
+        char c = text[i];
+        if (c < 32 || c > 126) c = ' '; // Only printable ASCII
+        
+        int fontIndex = c - 32; // Font array starts at space (32)
+        
+        for (int row = 0; row < 8; ++row) {
+            unsigned char rowData = font8x8_basic[fontIndex][row];
+            for (int col = 0; col < 8; ++col) {
+                if (rowData & (1 << col)) {
+                    drawPixel(window, cursorX + col, y + row, color);
+                }
+            }
+        }
+        cursorX += 8; // Move to next character position
+    }
+}
 
 struct Vec3 {
     float x, y, z;
@@ -48,7 +170,7 @@ struct Camera {
 
 // Better projection with near plane clipping
 bool project(const Vec3& v, int& x2d, int& y2d, int width, int height, float fov) {
-    const float nearPlane = 0.5f;  // Prevent rendering too close objects
+    const float nearPlane = 0.5f;
     
     if (v.z <= nearPlane) return false;
     
@@ -56,7 +178,6 @@ bool project(const Vec3& v, int& x2d, int& y2d, int width, int height, float fov
     x2d = static_cast<int>(v.x * factor + width/2);
     y2d = static_cast<int>(v.y * factor + height/2);
     
-    // Check if within screen bounds (with margin)
     return (x2d >= -100 && x2d < width + 100 && y2d >= -100 && y2d < height + 100);
 }
 
@@ -119,7 +240,7 @@ Chunk generateChunk(const ChunkCoord& coord) {
     const float chunkSize = 100.0f;
     Vec3 chunkOrigin(coord.x * chunkSize, coord.y * chunkSize, coord.z * chunkSize);
     
-    // Generate stars (lots of them)
+    // Generate stars
     int starCount = 80 + (hashCoord(coord.x, coord.y, coord.z, 1) % 40);
     for (int i = 0; i < starCount; ++i) {
         Star star;
@@ -132,7 +253,7 @@ Chunk generateChunk(const ChunkCoord& coord) {
         chunk.stars.push_back(star);
     }
     
-    // Generate cubes (fewer)
+    // Generate cubes
     int cubeCount = 2 + (hashCoord(coord.x, coord.y, coord.z, 2) % 4);
     for (int i = 0; i < cubeCount; ++i) {
         Cube cube;
@@ -143,7 +264,6 @@ Chunk generateChunk(const ChunkCoord& coord) {
         );
         cube.size = 1.0f + randomFloat(seed) * 4.0f;
         
-        // Varied colors
         uint8_t r = static_cast<uint8_t>(randomFloat(seed) * 100 + 155);
         uint8_t g = static_cast<uint8_t>(randomFloat(seed) * 100 + 155);
         uint8_t b = static_cast<uint8_t>(randomFloat(seed) * 100 + 155);
@@ -152,7 +272,7 @@ Chunk generateChunk(const ChunkCoord& coord) {
         chunk.cubes.push_back(cube);
     }
     
-    // Generate planets (rare)
+    // Generate planets
     if (randomFloat(seed) < 0.3f) {
         Planet planet;
         planet.pos = Vec3(
@@ -188,7 +308,7 @@ int main() {
     const int width = 1920;
     const int height = 1080;
 
-    WindowHandle* window = createWindow("SAMPLE4 - INFINITE SPACE NAVIGATION", width, height);
+    WindowHandle* window = createWindow("INFINITE SPACE NAVIGATION", width, height);
     if (!window) return -1;
 
     setMouseLocked(window, true);
@@ -201,17 +321,18 @@ int main() {
     cam.yawVelocity = 0;
     cam.pitchVelocity = 0;
 
-    const float moveAccel = 0.01f; // 0.8f
-    const float moveDamping = 1.0f; // 0.88f
-    const float maxSpeed = 10.0f; // 1.5f
-    const float mouseSensitivity = 0.003f; // 0.003f
-    const float mouseSmoothing = 0.3f; // 0.3f
+    const float moveAccel = 0.01f;
+    const float moveDamping = 1.0f;
+    const float maxSpeed = 1000.0f;
+    const float mouseSensitivity = 0.003f;
+    const float mouseSmoothing = 0.1f;
     
-    const float viewDistance = 300.0f; // 300.0f
-    const int renderRadius = 1; // Chunks to render in each direction; default = 3
+    const float viewDistance = 300.0f;
+    const int renderRadius = 3;
     float speed = 0.0f;
+    float acceleration = 0.0f;
 
-    // Cube vertices (shared)
+    // Cube vertices
     std::vector<Vec3> cubeVertices = {
         Vec3(-1,-1,-1), Vec3(1,-1,-1), Vec3(1,1,-1), Vec3(-1,1,-1),
         Vec3(-1,-1,1),  Vec3(1,-1,1),  Vec3(1,1,1),  Vec3(-1,1,1)
@@ -234,7 +355,7 @@ int main() {
     while (!windowShouldClose(window)) {
         pollEvents(window);
 
-        // ----- SMOOTH MOUSE LOOK -----
+        // Mouse look
         int dx, dy;
         getMouseDelta(window, dx, dy);
 
@@ -244,7 +365,6 @@ int main() {
         cam.yaw += cam.yawVelocity;
         cam.pitch += cam.pitchVelocity;
 
-        // Clamp pitch
         const float maxPitch = 1.5f;
         if (cam.pitch > maxPitch) cam.pitch = maxPitch;
         if (cam.pitch < -maxPitch) cam.pitch = -maxPitch;
@@ -264,7 +384,7 @@ int main() {
         
         Vec3 up(0, 1, 0);
 
-        // ----- SMOOTH MOVEMENT -----
+        // Movement
         Vec3 inputVelocity(0, 0, 0);
         
         if (keyDown(window, KEY_W) || keyDown(window, KEY_UP))
@@ -280,31 +400,31 @@ int main() {
         if (keyDown(window, KEY_Q))
             inputVelocity = inputVelocity - up;
 
-        // Normalize input to prevent faster diagonal movement
         float inputLen = length(inputVelocity);
         if (inputLen > 0.01f) {
             inputVelocity = normalize(inputVelocity) * moveAccel;
         }
 
-        // Apply acceleration
+        // Calculate acceleration
+        Vec3 oldVelocity = cam.velocity;
         cam.velocity = cam.velocity + inputVelocity;
-        
-        // Apply damping
         cam.velocity = cam.velocity * moveDamping;
         
-        // Clamp to max speed
         speed = length(cam.velocity);
         if (speed > maxSpeed) {
             cam.velocity = normalize(cam.velocity) * maxSpeed;
+            speed = maxSpeed;
         }
         
-        // Update position
+        // Calculate acceleration as change in velocity
+        Vec3 accelVec = cam.velocity - oldVelocity;
+        acceleration = length(accelVec);
+        
         cam.position = cam.position + cam.velocity;
 
-        // ----- CHUNK LOADING/UNLOADING -----
+        // Chunk loading
         ChunkCoord currentChunk = worldToChunk(cam.position);
         
-        // Load nearby chunks
         for (int x = -renderRadius; x <= renderRadius; ++x) {
             for (int y = -renderRadius; y <= renderRadius; ++y) {
                 for (int z = -renderRadius; z <= renderRadius; ++z) {
@@ -317,7 +437,7 @@ int main() {
             }
         }
         
-        // Unload distant chunks (keep cache from growing too large)
+        // Unload distant chunks
         std::vector<ChunkCoord> toRemove;
         for (auto& pair : chunkCache) {
             int dx = pair.first.x - currentChunk.x;
@@ -335,7 +455,7 @@ int main() {
             chunkCache.erase(coord);
         }
 
-        // ----- RENDERING -----
+        // Rendering
         clearScreen(window, Color(0, 0, 5));
 
         const float fov = 600.0f;
@@ -343,12 +463,11 @@ int main() {
         int cubesRendered = 0;
         int planetsRendered = 0;
 
-        // ----- DRAW STARS -----
+        // Draw stars
         for (auto& chunkPair : chunkCache) {
             for (auto& star : chunkPair.second.stars) {
                 Vec3 p = star.pos - cam.position;
                 
-                // Distance culling
                 float dist = length(p);
                 if (dist > viewDistance) continue;
                 
@@ -358,7 +477,6 @@ int main() {
                 int sx, sy;
                 if (project(p, sx, sy, width, height, fov)) {
                     if (sx >= 0 && sx < width && sy >= 0 && sy < height) {
-                        // Dimmer stars when far away
                         float brightness = 1.0f - (dist / viewDistance);
                         uint8_t b = static_cast<uint8_t>(star.brightness * brightness);
                         drawPixel(window, sx, sy, Color(b, b, b));
@@ -368,12 +486,11 @@ int main() {
             }
         }
 
-        // ----- DRAW CUBES -----
+        // Draw cubes
         for (auto& chunkPair : chunkCache) {
             for (auto& cube : chunkPair.second.cubes) {
                 Vec3 cubePos = cube.pos - cam.position;
                 
-                // Distance culling
                 if (length(cubePos) > viewDistance) continue;
 
                 std::vector<Vec3> transformed;
@@ -387,14 +504,12 @@ int main() {
                     v = rotateX(v, -cam.pitch);
                     transformed.push_back(v);
                     
-                    if (v.z > -1.0f) anyVisible = true; // 0.5
+                    if (v.z > -1.0f) anyVisible = true;
                 }
 
-                // Only render if at least one vertex is visible
                 if (!anyVisible) continue;
 
                 for (auto& e : cubeEdges) {
-                    // Only draw edge if both vertices are in front of camera
                     if (transformed[e.first].z > 0.5f && transformed[e.second].z > 0.5f) {
                         int x1, y1, x2, y2;
                         if (project(transformed[e.first], x1, y1, width, height, fov) &&
@@ -407,12 +522,11 @@ int main() {
             }
         }
 
-        // ----- DRAW PLANETS -----
+        // Draw planets
         for (auto& chunkPair : chunkCache) {
             for (auto& planet : chunkPair.second.planets) {
                 Vec3 p = planet.pos - cam.position;
                 
-                // Distance culling
                 if (length(p) > viewDistance) continue;
                 
                 p = rotateY(p, -cam.yaw);
@@ -423,7 +537,6 @@ int main() {
                     float scale = fov / p.z;
                     int radius2D = static_cast<int>(planet.radius * scale);
                     
-                    // Only draw if reasonable size
                     if (radius2D > 1 && radius2D < 500) {
                         drawCircle(window, cx, cy, radius2D, planet.color);
                         planetsRendered++;
@@ -432,30 +545,46 @@ int main() {
             }
         }
 
-        // ----- DEBUG INFO -----
-        // Position text (top-left)
-        char posText[128];
-        snprintf(posText, sizeof(posText), "X:%.1f Y:%.1f Z:%.1f", 
-                 cam.position.x, cam.position.y, cam.position.z);
+        // Draw HUD with actual text
+        char textBuf[256];
+        int lineY = 10;
         
-        // Draw simple text using rectangles
-        int textY = 10;
-        for (int i = 0; posText[i] != '\0'; ++i) {
-            drawFilledRectangle(window, 10 + i * 8, textY, 6, 10, Color(0, 255, 0, 128));
-        }
+        // Position
+        snprintf(textBuf, sizeof(textBuf), "Position X:%.1f Y:%.1f Z:%.1f", 
+                 cam.position.x, cam.position.y, cam.position.z);
+        drawText(window, 10, lineY, textBuf, Color(0, 255, 100));
+        lineY += 12;
+        
+        // Speed
+        snprintf(textBuf, sizeof(textBuf), "Speed: %.2f", speed);
+        drawText(window, 10, lineY, textBuf, Color(100, 200, 255));
+        lineY += 12;
+        
+        // Acceleration
+        snprintf(textBuf, sizeof(textBuf), "Accel: %.4f", acceleration);
+        drawText(window, 10, lineY, textBuf, Color(255, 200, 100));
+        lineY += 12;
+        
+        // Velocity components
+        snprintf(textBuf, sizeof(textBuf), "Velocity X:%.2f Y:%.2f Z:%.2f", 
+                 cam.velocity.x, cam.velocity.y, cam.velocity.z);
+        drawText(window, 10, lineY, textBuf, Color(200, 150, 255));
+        lineY += 12;
+        
+        // Camera rotation
+        snprintf(textBuf, sizeof(textBuf), "Yaw:%.2f Pitch:%.2f", cam.yaw, cam.pitch);
+        drawText(window, 10, lineY, textBuf, Color(255, 255, 100));
+        lineY += 12;
         
         // Render stats
-        snprintf(posText, sizeof(posText), "Stars:%d Cubes:%d Planets:%d Chunks:%d", 
-                 starsRendered, cubesRendered, planetsRendered, (int)chunkCache.size());
-        textY = 25;
-        for (int i = 0; posText[i] != '\0'; ++i) {
-            drawFilledRectangle(window, 10 + i * 8, textY, 6, 10, Color(0, 200, 200, 128));
-        }
+        snprintf(textBuf, sizeof(textBuf), "Stars:%d Cubes:%d Planets:%d", 
+                 starsRendered, cubesRendered, planetsRendered);
+        drawText(window, 10, lineY, textBuf, Color(100, 255, 255));
+        lineY += 12;
         
-        textY = 40;
-        for (int i = 0; speed * 3 > i; i++) {
-            drawFilledRectangle(window, 10 + i * 8, textY, 6, 10, Color(0, 200, 200, 128));
-        }
+        // Chunks loaded
+        snprintf(textBuf, sizeof(textBuf), "Chunks:%d FPS:%d", (int)chunkCache.size(), fps);
+        drawText(window, 10, lineY, textBuf, Color(255, 100, 255));
 
         swapBuffers(window);
         delay(16);
